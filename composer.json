@@ -1,0 +1,33 @@
+{
+    "name": "btafoya/sslvalidation",
+    "description": "Small utility library that downloads and returns ssl certificate information from a running web server.",
+    "type": "library",
+    "license": "MIT",
+    "keywords": [
+        "certificate",
+        "ssl",
+        "validate",
+        "information"
+    ],
+    "authors": [
+        {
+            "name": "Brian Tafoya",
+            "email": "btafoya@briantafoya.com",
+            "homepage": "http://briantafoya.com"
+        }
+    ],
+    "support": {
+        "issues": "https://github.com/cbtafoya/sslvalidation/issues"
+    },
+    "require": {
+        "ext-openssl": "*",
+        "ext-pcre": "*",
+        "php": "^5.5.6 || ^7.0",
+        "composer/ca-bundle": "^1.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "btafoya\\sslValidation\\": "src"
+        }
+    }
+}

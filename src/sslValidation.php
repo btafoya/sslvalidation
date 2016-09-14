@@ -47,7 +47,7 @@ class sslValidation {
 
 				$arrayKeyName = self::arrayKeyName($domain, $port);
 
-				$this->results[$arrayKeyName] = array(
+				self::$results[$arrayKeyName] = array(
 					"status"=>true,
 					"cert"=>$cert,
 					"validFrom_date"=>date("r",$cert["validFrom_time_t"]),
@@ -57,7 +57,7 @@ class sslValidation {
 					"arrayKeyName"=>$arrayKeyName
 				);
 
-				return $this->results[$arrayKeyName];
+				return self::$results[$arrayKeyName];
 			}
 
 
@@ -97,7 +97,7 @@ class sslValidation {
 	 * @return array
 	 */
 	public function getResults($arrayKeyName) {
-		return (isset($this->results[$arrayKeyName])?$this->results[$arrayKeyName]:array(
+		return (isset(self::$results[$arrayKeyName])?self::$results[$arrayKeyName]:array(
 			"status"=>false,
 			"errorString"=>"No information found.",
 			"errorNumber"=>911,

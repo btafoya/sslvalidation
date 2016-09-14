@@ -18,14 +18,15 @@ use \Composer\CaBundle\CaBundle;
  */
 class sslValidation {
 	public $errors = array();
+	public $results = array();
 
 	/**
-	 * Small utility library that downloads and returns ssl certificate information from a running web server.
+	 * getSSLInformation - get the ssl certificate information and return a data array.
 	 *
 	 * @param  $domain, $port         The domain and port which the ssl certificate is accessible.
 	 * @return array                  certificate information parsed into an array for ease of use. Always return a status key, true for a valid response, false for any failure.
 	 */
-	public function getSSLInformation ($domain, $port = "443") {
+	public function getSSLInformation($domain, $port = "443") {
 
 		$cafile = CaBundle::getSystemCaRootBundlePath();
 
@@ -44,17 +45,19 @@ class sslValidation {
 				$cont = @stream_context_get_params($r);
 				$cert = @openssl_x509_parse($cont["options"]["ssl"]["peer_certificate"]);
 
-				return
-					array(
-						"status"=>true,
-						"cert"=>$cert,
-						"validFrom_date"=>date("r",$cert["validFrom_time_t"]),
-						"validTo_date"=>date("r",$cert["validTo_time_t"]),
-						"certificatePolicies"=>self::parseStringDataToArray($cert["extensions"]["certificatePolicies"]),
-						"subjectAltName"=>self::parseAltNameToArray($cert["extensions"]["subjectAltName"]),
-						"caPath"=>$cafile
-					)
-				;
+				$arrayKeyName = self::arrayKeyName($domain, $port);
+
+				$this->results[$arrayKeyName] = array(
+					"status"=>true,
+					"cert"=>$cert,
+					"validFrom_date"=>date("r",$cert["validFrom_time_t"]),
+					"validTo_date"=>date("r",$cert["validTo_time_t"]),
+					"certificatePolicies"=>self::parseStringDataToArray($cert["extensions"]["certificatePolicies"]),
+					"subjectAltName"=>self::parseAltNameToArray($cert["extensions"]["subjectAltName"]),
+					"arrayKeyName"=>$arrayKeyName
+				);
+
+				return $this->results[$arrayKeyName];
 			}
 
 
@@ -69,8 +72,43 @@ class sslValidation {
 	}
 
 	/**
+	 * arrayKeyName - Utility method to determine the results array key.
+	 *
+	 * @param  $domain, $port         The domain and port which the ssl certificate is accessible.
+	 * @return string
+	 */
+	public function arrayKeyName($domain, $port) {
+		return strtolower(str_replace(".", "_", $domain)) . "_" . $port;
+	}
+
+	/**
+	 * getResultArrayKeys - Return the result array key names.
+	 *
+	 * @return array
+	 */
+	public function getResultArrayKeys() {
+		return array_keys($this->results);
+	}
+
+	/**
+	 * getResults - Return the information for the specific key.
+	 *
+	 * @param  $domainKey
+	 * @return array
+	 */
+	public function getResults($arrayKeyName) {
+		return (isset($this->results[$arrayKeyName])?$this->results[$arrayKeyName]:array(
+			"status"=>false,
+			"errorString"=>"No information found.",
+			"errorNumber"=>911,
+			"arrayKeyName"=>$arrayKeyName
+		));
+	}
+
+	/**
 	 * Simple string cleanup.
 	 *
+	 * @param  $string string data to clean
 	 * @return string
 	 */
 	private function cleanStringData($string) {
@@ -80,6 +118,7 @@ class sslValidation {
 	/**
 	 * Parse string data into an array, such as certificatePolicies.
 	 *
+	 * @param  $string string data to convert
 	 * @return array
 	 */
 	private function parseStringDataToArray($string) {
@@ -95,6 +134,7 @@ class sslValidation {
 	/**
 	 * Parse subjectAltName string data into an array.
 	 *
+	 * @param  $string string data to convert
 	 * @return array
 	 */
 	private function parseAltNameToArray($string) {
@@ -113,6 +153,7 @@ class sslValidation {
 	 *
 	 * Used by: parseStringDataToArray() and parseAltNameToArray()
 	 *
+	 * @param  $string, $sourceArray string data to convert, array to modify and return
 	 * @return array
 	 */
 	private function explodeToArray($i, $sourceArray) {

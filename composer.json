@@ -17,7 +17,7 @@
         }
     ],
     "support": {
-        "issues": "https://github.com/cbtafoya/sslvalidation/issues"
+        "issues": "https://github.com/btafoya/sslvalidation/issues"
     },
     "require": {
         "ext-openssl": "*",

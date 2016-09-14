@@ -17,8 +17,8 @@ use \Composer\CaBundle\CaBundle;
  * @author Brian Tafoya <btafoya@briantafoya.com>
  */
 class sslValidation {
-	public $errors = array();
-	public $results = array();
+	public static $errors = array();
+	public static $results = array();
 
 	/**
 	 * getSSLInformation - get the ssl certificate information and return a data array.
@@ -35,7 +35,7 @@ class sslValidation {
 			$r = @stream_socket_client("ssl://" . (string)$domain. ":" . (int)$port, $errno, $errstr, 30, STREAM_CLIENT_CONNECT, $g);
 
 			if (!$r) {
-				$this->errors[] = $this->cleanStringData($errstr);
+				self::$errors[] = $this->cleanStringData($errstr);
 				return array(
 					"status"=>false,
 					"errorString"=>$this->cleanStringData($errstr),
@@ -62,7 +62,7 @@ class sslValidation {
 
 
 		} catch (Exception $e) {
-			$this->errors[] = $e->getMessage();
+			self::$errors[] = $e->getMessage();
 			return array(
 				"status"=>false,
 				"errorString"=>$e->getMessage(),

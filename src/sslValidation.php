@@ -50,8 +50,8 @@ class sslValidation {
 						"cert"=>$cert,
 						"validFrom_date"=>date("r",$cert["validFrom_time_t"]),
 						"validTo_date"=>date("r",$cert["validTo_time_t"]),
-						"certificatePolicies"=>$this->parseStringDataToArray($cert["extensions"]["certificatePolicies"]),
-						"subjectAltName"=>$this->parseAltNameToArray($cert["extensions"]["subjectAltName"]),
+						"certificatePolicies"=>self::parseStringDataToArray($cert["extensions"]["certificatePolicies"]),
+						"subjectAltName"=>self::parseAltNameToArray($cert["extensions"]["subjectAltName"]),
 						"caPath"=>$cafile
 					)
 				;
@@ -86,7 +86,7 @@ class sslValidation {
 		$results = array();
 		$data_array = preg_split("/\\r\\n|\\r|\\n/", trim($string));
 		foreach($data_array as $i) {
-			$results = $this->explodeToArray($i, $results);
+			$results = self::explodeToArray($i, $results);
 		}
 
 		return (array)$results;
@@ -102,7 +102,7 @@ class sslValidation {
 		$names = explode(",",trim($string));
 
 		foreach($names as $i) {
-			$results = $this->explodeToArray($i, $results);
+			$results = self::explodeToArray($i, $results);
 		}
 
 		return (array)$results;
